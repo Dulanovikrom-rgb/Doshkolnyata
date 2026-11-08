@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Светофорик — Миссия 1</title>
+    <style>
+        :root {
+            --bg-color: #FFF8E1;
+            --card-bg: #FFFFFF;
+            --text-color: #3E2723;
+            --accent-color: #FF9800;
+            --correct-color: #4CAF50;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .sova-avatar {
+            font-size: 64px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .btn-main {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #E65100;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #E65100;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .quiz-btn {
+            background: #FAFAFA;
+            border: 2px solid #E0E0E0;
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: #FFFFFF;
+            border: 2px dashed #BDBDBD;
+            border-radius: 12px;
+            margin-top: 10px;
+            touch-action: none;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+
+        .feedback {
+            margin-top: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header-card">
+        <div class="sova-avatar">🦉</div>
+        <h1>Светофорик: Миссия 1</h1>
+        <button class="btn-main" onclick="speakIntro()">🚀 НАЧАТЬ ПУТЕШЕСТВИЕ</button>
+    </div>
+
+    <!-- МИССИЯ 1: УШКИ И ГЛАЗКИ -->
+    <div class="card">
+        <h2>1. Миссия «Ушки и Глазки»</h2>
+        <p>Слушаем звук <b>[А]</b>. Потяни его: <b>А-а-а!</b></p>
+        <p>Нажми на картинку, где спрятался звук [А]:</p>
+        <div class="quiz-options">
+            <button class="quiz-btn" onclick="checkQuiz(false, 'СНЕГ')">❄️ СНЕГ</button>
+            <button class="quiz-btn" onclick="checkQuiz(true, 'АРБУЗ')">🍉 АРБУЗ</button>
+        </div>
+        <div id="quiz-feedback" class="feedback"></div>
+    </div>
+
+    <!-- МИССИЯ 2: ЦИФРЫ-ПОДРУЖКИ -->
+    <div class="card">
+        <h2>2. Миссия «Цифры-подружки»</h2>
+        <p>Один нос, два глаза! Обведи цифры 1 и 2 по точкам в тетради.</p>
+        <p>Сколько арбузов мы нашли?</p>
+        <div style="display:flex; gap:10px; margin-top: 12px;">
+            <button class="quiz-btn" style="flex:1" onclick="checkMath(true)">1️⃣</button>
+            <button class="quiz-btn" style="flex:1" onclick="checkMath(false)">2️⃣</button>
+        </div>
+        <div id="math-feedback" class="feedback"></div>
+    </div>
+
+    <!-- МИССИЯ 3: ДОЖДИК ДЛЯ ЦВЕТОЧКА -->
+    <div class="card">
+        <h2>3. Миссия «Дождик для цветочка»</h2>
+        <p>Проведи 5 прямых линий сверху вниз. <i>Никуда не спеши, рисуй аккуратно!</i></p>
+        <div class="canvas-container">
+            <canvas id="rainCanvas"></canvas>
+        </div>
+        <button style="margin-top:12px; background:#EEEEEE; border:none; padding:10px 16px; border-radius:10px; font-weight:bold; width:100%; cursor:pointer;" onclick="clearCanvas()">Очистить холст</button>
+    </div>
+
+    <!-- МИССИЯ 4: КТО ЖИВЕТ В ЛЕСУ? -->
+    <div class="card">
+        <h2>4. Миссия «Кто живёт в лесу?»</h2>
+        <p>Кто говорит <b>«Му-у»</b>? Нажми на нужное животное:</p>
+        <div class="quiz-options" style="grid-template-columns: 1fr 1fr 1fr;">
+            <button class="quiz-btn" onclick="checkAnimal(true)">🐮</button>
+            <button class="quiz-btn" onclick="checkAnimal(false)">🐶</button>
+            <button class="quiz-btn" onclick="checkAnimal(false)">🦆</button>
+        </div>
+        <div id="animal-feedback" class="feedback"></div>
+    </div>
+
+</div>
+
+<script>
+    function speak(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ru-RU';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function speakIntro() {
+        speak("Привет! Я Сова. Сегодня мы отправляемся в путешествие. Первая остановка — страна Звуков!");
+    }
+
+    function checkQuiz(isCorrect, word) {
+        const fb = document.getElementById('quiz-feedback');
+        if (isCorrect) {
+            fb.style.color = 'var(--correct-color)';
+            fb.innerText = '✨ Молодец! В слове АРБУЗ есть звук А!';
+            speak('Ушки поработали! В слове АРБУЗ есть звук А! Теперь включаем глазки и переходим к цифрам!');
+        } else {
+            fb.style.color = '#D32F2F';
+            fb.innerText = 'Попробуй еще раз!';
+            speak('Послушай слово еще раз: ' + word);
+        }
+    }
+
+    function checkMath(isCorrect) {
+        const fb = document.getElementById('math-feedback');
+        if (isCorrect) {
+            fb.style.color = 'var(--correct-color)';
+            fb.innerText = '✨ Правильно! Один арбуз!';
+            speak('Пальчики размялись? Теперь нарисуем дождик для цветочка! Никуда не спеши!');
+        } else {
+            fb.style.color = '#D32F2F';
+            fb.innerText = 'Посчитай внимательно!';
+        }
+    }
+
+    function checkAnimal(isCorrect) {
+        const fb = document.getElementById('animal-feedback');
+        if (isCorrect) {
+            fb.style.color = 'var(--correct-color)';
+            fb.innerText = '✨ Верно! Корова говорит Му-у!';
+            speak('Ты отличный исследователь! Прошел все четыре миссии! До следующей субботы!');
+        } else {
+            fb.style.color = '#D32F2F';
+            fb.innerText = 'Подумай еще!';
+            speak('Подумай, кто так говорит?');
+        }
+    }
+
+    // Холст для рисования
+    const canvas = document.getElementById('rainCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+
+    function resizeCanvas() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+        drawGuides();
+    }
+
+    function drawGuides() {
+        ctx.strokeStyle = '#E0E0E0';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        for (let x = 40; x < canvas.width; x += 50) {
+            ctx.beginPath();
+            ctx.moveTo(x, 20);
+            ctx.lineTo(x, canvas.height - 20);
+            ctx.stroke();
+        }
+        ctx.setLineDash([]);
+    }
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGuides();
+    }
+
+    function startDrawing(e) {
+        isDrawing = true;
+        draw(e);
+    }
+
+    function stopDrawing() {
+        isDrawing = false;
+        ctx.beginPath();
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#FF9800';
+
+        ctx.lineTo(clientX - rect.left, clientY - rect.top);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(clientX - rect.left, clientY - rect.top);
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mousemove', draw);
+
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
+    canvas.addEventListener('touchend', stopDrawing);
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 100);
+</script>
+
+</body>
+</html>
